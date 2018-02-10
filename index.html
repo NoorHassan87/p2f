@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <title>Cinemana</title>
+</head>
+<body class="bg-light bgImage" >
+<div id="root">
+    <nav class="navbar navbar-expand-lg  bg-dark">
+        <a class="navbar-brand" href="#">cinemana</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Movies</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Contact
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Facebook</a>
+                        <a class="dropdown-item" href="#">Gmail</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Twitter Acount</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <!-- Example single danger button -->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-danger dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                            Genres
+                        </button>
+                        <div class="dropdown-menu">
+                            <a v-for="genre in genres" @click="getMovies(genre.id)" class="dropdown-item" href="#">{{genre.name}}</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input v-model="film" class="form-control mr-sm-2" type="search" placeholder="Search for a film"
+                       aria-label="Search">
+                <button @click="addFilm()" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row ">
+            <div class="col-md-12" v-for="movie in movies">
+                <div class="card bgColor">
+                    <div class="row justify-content-end">
+                        <div class="col-md-5">
+                            <div class="card-block">
+                                <h3 class="card-title mt-2 color">{{movie.title}}</h3>
+                                <h6 class="card-text color">{{movie.overview}}</h6>
+                                <hr>
+                                <p class="card-text color">Release Date</p>
+                                <p class="color">{{movie.release_date}}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 ">
+                            <img
+                                    :src="'https://image.tmdb.org/t/p/w600_and_h900_bestv2/' + movie.poster_path"
+                                    alt="Card image cap" style="height: 15rem; width: 50%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    var app = new Vue({
+        el: "#root",
+        data: {
+            genres: [],
+            movies: [],
+            film: "",
+        },
+        methods: {
+            getMovies: function (genreId) {
+                axios.get(`https://api.themoviedb.org/3/genre/${genreId}/movies`, {
+                    params: {
+                        api_key: "caa1f20701af631a13e5f64b9fc69e1b"
+                    }
+                }).then(function (response) {
+                    app.movies = response.data.results
+                })
+            },
+            addFilm: function () {
+                axios.get(`https://api.themoviedb.org/3/search/movie`, {
+                    params: {
+                        api_key: "caa1f20701af631a13e5f64b9fc69e1b",
+                        query: this.film,
+                    }
+                }).then(function (response) {
+                    app.movies = response.data.results
+                })
+            }
+        },
+        mounted: function () {
+            console.log(this.genres);
+            axios.get('https://api.themoviedb.org/3/genre/movie/list', {
+                params: {
+                    language: "en-US",
+                    api_key: "caa1f20701af631a13e5f64b9fc69e1b"
+                }
+            }).then(function (response) {
+                app.genres = response.data.genres;
+            })
+        }
+    })
+</script>
+</body>
+</html>
